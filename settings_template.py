@@ -1,0 +1,16 @@
+DB_HOST = 'localhost'
+DB_PORT = '5432'
+DB_USER = ''
+DB_PASS = ''
+DB_NAME = ''
+
+MQ_HOST = ''
+MQ_PORT = ''
+MQ_USER = ''
+MQ_PASS = ''
+MQ_VHOST = ''
+
+REDIS_HOST = ''
+REDIS_PORT = ''
+REDIS_PASS = ''
+REDIS_DB = ''

@@ -279,3 +279,5 @@ dmypy.json
 cython_debug/
 
 ./idea/
+
+./settings.py
