@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
 import time
+import settings
 from threading import Thread
 from subprocess import Popen, PIPE
 from sanic.log import logger as _logger
@@ -17,19 +18,51 @@ class CeleryJob(object):
 
     def start_celery(self, path):
         if self.restart:
-            p = Popen(["celery", "-A", "workers.tasks", "worker", "--loglevel=info", "-n",
-                       "worker1.%n{}".format(self.__hash__()), "-B", "-s", "/tmp/celerybeat-schedule"],
-                      cwd=path, stdin=PIPE)
+            p = Popen(
+                [
+                    "celery",
+                    "-A",
+                    "workers",
+                    "worker",
+                    "--loglevel=info",
+                    "-n",
+                    "worker1.%n[{}] {}".format(self.app.name, self.app.__hash__()),
+                    "-B",
+                    "-s",
+                    "/tmp/celerybeat-schedule"
+                ],
+                cwd=path, stdin=PIPE
+            )
             return p
+        else:
+            return self
+
+    def start_flower(self, path):
+        if self.restart:
+            f = Popen(
+                [
+                    "celery",
+                    "-A",
+                    "workers",
+                    "flower",
+                    "--port=%s" % settings.Celery.custom_flower_port or '5555',
+                    "--basic_auth=%s:%s" % (settings.Celery.custom_flower_user or 'admin', settings.Celery.custom_flower_pass or 'admin'),
+                ],
+                cwd=path, stdin=PIPE
+            )
+            return f
         else:
             return self
 
     def check_status(self):
         path = os.path.abspath(os.path.dirname(__name__))
         c = self.start_celery(path)
+        f = self.start_flower(path)
         while 1:
             if c.poll() is not None:
                 c = self.start_celery(path)
+            if f.poll() is not None:
+                f = self.start_flower(path)
             time.sleep(10)
 
     def run(self):

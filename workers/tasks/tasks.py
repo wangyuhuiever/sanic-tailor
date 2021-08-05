@@ -1,4 +1,5 @@
-from workers.celery_client import app
+# -*- coding: utf-8 -*-
+from workers import app
 
 
 @app.task(name='sum')

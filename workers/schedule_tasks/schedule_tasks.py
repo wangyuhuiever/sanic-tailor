@@ -1,5 +1,5 @@
-from workers.celery_client import app
-from utils.database import Database
+from workers import app
+from workers.utils.database import database
 import asyncio
 import logging
 
@@ -9,7 +9,8 @@ _logger = logging.getLogger(__name__)
 async def insert_db():
     sql = "insert into test_table (col1, col2) values ($1, $2) returning id;"
     values = [1, 'test']
-    await Database().execute(sql, *values)
+    res = await database.execute(sql, *values)
+    print(res)
     return
 
 

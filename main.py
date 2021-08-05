@@ -1,14 +1,16 @@
 from sanic import Sanic
 from blueprints import bp
-from utils.database import mount_database
+from utils.database import init_database, close_database
 from utils.celery import celery_start, celery_stop
 import settings
 
-app = Sanic("Transport Route")
-app.update_config(settings)
+app = Sanic(settings.Sanic.name)
+app.update_config(settings.Sanic)
 app.blueprint(bp)
 
-app.register_listener(mount_database, 'after_server_start')
+app.register_listener(init_database, 'before_server_start')
+app.register_listener(close_database, 'after_server_stop')
+
 app.register_listener(celery_start, 'main_process_start')
 app.register_listener(celery_stop, 'main_process_stop')
 

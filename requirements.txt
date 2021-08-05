@@ -3,3 +3,4 @@ async-lru==1.0.2
 asyncpg==0.23.0
 celery==5.1.2
 redis==3.5.3
+flower==1.0.0
