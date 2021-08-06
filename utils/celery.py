@@ -24,12 +24,10 @@ class CeleryJob(object):
                     "-A",
                     "workers",
                     "worker",
-                    "--loglevel=info",
+                    "--loglevel={}".format(settings.Celery.custom_loglevel or 'info'),
                     "-n",
                     "worker1.%n[{}] {}".format(self.app.name, self.app.__hash__()),
                     "-B",
-                    "-s",
-                    "/tmp/celerybeat-schedule"
                 ],
                 cwd=path, stdin=PIPE
             )
@@ -45,7 +43,7 @@ class CeleryJob(object):
                     "-A",
                     "workers",
                     "flower",
-                    "--port=%s" % settings.Celery.custom_flower_port or '5555',
+                    "--port=%s" % (settings.Celery.custom_flower_port or '5555'),
                     "--basic_auth=%s:%s" % (settings.Celery.custom_flower_user or 'admin', settings.Celery.custom_flower_pass or 'admin'),
                 ],
                 cwd=path, stdin=PIPE

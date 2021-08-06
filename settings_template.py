@@ -42,10 +42,12 @@ class Celery:
     custom_flower_port = ''
     custom_flower_user = ''
     custom_flower_pass = ''
+    custom_loglevel = 'info'
 
     broker_url = f'amqp://{RabbitMQ.MQ_USER}:{RabbitMQ.MQ_PASS}@{RabbitMQ.MQ_HOST}:{RabbitMQ.MQ_PORT}/{RabbitMQ.MQ_VHOST}'
     result_backend = f'redis://default:{Redis.REDIS_PASS}@{Redis.REDIS_HOST}:{Redis.REDIS_PORT}/{Redis.REDIS_DB}'
     result_expires = 3600
+    beat_schedule_filename = '/tmp/celerybeat-schedule'
     enable_utc = True
     beat_schedule = {
         'schedule_task': {
