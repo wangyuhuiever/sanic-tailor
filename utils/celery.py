@@ -75,13 +75,13 @@ class CeleryJob(object):
         self.restart = False
 
 
-def celery_start(app, loop):
+async def init_celery(app, loop):
     _logger.info("Celery starting...")
     celery_thread = CeleryJob(app)
     celery_thread.run()
     app.celery = celery_thread
 
 
-async def celery_stop(app, loop):
+async def close_celery(app, loop):
     _logger.info("Celery stopping...")
     app.celery.stop()

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from workers import app
-from utils.database import AnotherDatabase
+from utils.db import AnotherDatabase
 
 database = AnotherDatabase(
     app.conf.custom_db_host,

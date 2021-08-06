@@ -1,4 +1,4 @@
 from sanic import Blueprint
-from .api import api
+from .demo import demo
 
-bp = Blueprint.group(api, url_prefix='/api')
+bp = Blueprint.group(demo, url_prefix='/api')

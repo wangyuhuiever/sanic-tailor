@@ -1,37 +1,41 @@
 import asyncpg
-# from async_lru import alru_cache
+import settings
+from sanic.log import logger as _logger
 
 
 class Database(object):
 
-    def __init__(self, pool=None):
-        self.pool = pool
+    @classmethod
+    async def init(cls, pool):
+        cls.pool = pool
+
+    @classmethod
+    async def close(cls):
+        cls.pool = {}
 
     async def execute(self, sql, *args):
         async with self.pool.acquire() as connection:
             value = await connection.fetch(sql, *args)
             return value
 
-    async def close(self):
-        await self.pool.close()
-
 
 async def init_database(app, loop):
+    _logger.info("Database starting...")
     pool = await asyncpg.create_pool(
-        host=app.config.DB_HOST,
-        port=app.config.DB_PORT,
-        user=app.config.DB_USER,
-        password=app.config.DB_PASS,
-        database=app.config.DB_NAME,
+        host=settings.Database.DB_HOST,
+        port=settings.Database.DB_PORT,
+        user=settings.Database.DB_USER,
+        password=settings.Database.DB_PASS,
+        database=settings.Database.DB_NAME,
         min_size=5,
-        max_size=100
+        max_size=20
     )
-
-    app.database = Database(pool=pool)
+    await Database.init(pool)
 
 
 async def close_database(app, loop):
-    await app.database.close()
+    _logger.info("Database stopping...")
+    await Database.close()
 
 
 class AnotherDatabase(object):
