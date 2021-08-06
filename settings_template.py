@@ -16,7 +16,8 @@ class Database:
 
 class RabbitMQ:
     MQ_HOST = ''
-    MQ_PORT = ''
+    MQ_PORT = '5672'
+    MQ_API_PORT = '15672'
     MQ_USER = ''
     MQ_PASS = ''
     MQ_VHOST = ''
@@ -24,9 +25,9 @@ class RabbitMQ:
 
 class Redis:
     REDIS_HOST = ''
-    REDIS_PORT = ''
+    REDIS_PORT = '6379'
     REDIS_PASS = ''
-    REDIS_DB = ''
+    REDIS_DB = '8'
 
 
 class Celery:
