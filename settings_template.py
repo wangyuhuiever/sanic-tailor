@@ -7,45 +7,47 @@ class Sanic:
 class Database:
     start = True
 
-    DB_HOST = 'localhost'
-    DB_PORT = '5432'
-    DB_USER = ''
-    DB_PASS = ''
-    DB_NAME = ''
+    HOST = 'localhost'
+    PORT = '5432'
+    USER = ''
+    PASS = ''
+    NAME = ''
 
 
 class RabbitMQ:
-    MQ_HOST = ''
-    MQ_PORT = ''
-    MQ_USER = ''
-    MQ_PASS = ''
-    MQ_VHOST = ''
+    HOST = ''
+    PORT = ''
+    USER = ''
+    PASS = ''
+    VHOST = ''
 
 
 class Redis:
-    REDIS_HOST = ''
-    REDIS_PORT = ''
-    REDIS_PASS = ''
-    REDIS_DB = ''
+    start = True
+
+    HOST = ''
+    PORT = ''
+    PASS = ''
+    DB = ''
 
 
 class Celery:
     name = "Yuhui Sanic Celery"
     start = True
 
-    custom_db_host = Database.DB_HOST
-    custom_db_port = Database.DB_PORT
-    custom_db_user = Database.DB_USER
-    custom_db_pass = Database.DB_PASS
-    custom_db_name = Database.DB_NAME
+    custom_db_host = Database.HOST
+    custom_db_port = Database.PORT
+    custom_db_user = Database.USER
+    custom_db_pass = Database.PASS
+    custom_db_name = Database.NAME
 
     custom_flower_port = ''
     custom_flower_user = ''
     custom_flower_pass = ''
     custom_loglevel = 'info'
 
-    broker_url = f'amqp://{RabbitMQ.MQ_USER}:{RabbitMQ.MQ_PASS}@{RabbitMQ.MQ_HOST}:{RabbitMQ.MQ_PORT}/{RabbitMQ.MQ_VHOST}'
-    result_backend = f'redis://default:{Redis.REDIS_PASS}@{Redis.REDIS_HOST}:{Redis.REDIS_PORT}/{Redis.REDIS_DB}'
+    broker_url = f'amqp://{RabbitMQ.USER}:{RabbitMQ.PASS}@{RabbitMQ.HOST}:{RabbitMQ.PORT}/{RabbitMQ.VHOST}'
+    result_backend = f'redis://default:{Redis.PASS}@{Redis.HOST}:{Redis.PORT}/{Redis.DB}'
     result_expires = 3600
     beat_schedule_filename = '/tmp/celerybeat-schedule'
     enable_utc = True

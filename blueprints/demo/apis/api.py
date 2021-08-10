@@ -13,7 +13,6 @@ async def test_api(request):
     headers = request.headers
     logger.info({'headers': headers})
 
-    res = await DemoModel().insert_data()
+    data = await DemoModel().insert_data()
 
-    data = [dict(r) for r in res]
     return response({'data': data})

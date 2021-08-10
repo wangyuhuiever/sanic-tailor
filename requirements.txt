@@ -5,3 +5,4 @@ celery==5.1.2
 redis==3.5.3
 flower==1.0.0
 httpx==0.18.2
+aioredis==2.0.0

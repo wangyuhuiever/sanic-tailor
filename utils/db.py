@@ -22,11 +22,11 @@ class Database(object):
 async def init_database(app, loop):
     _logger.info("Database starting...")
     pool = await asyncpg.create_pool(
-        host=settings.Database.DB_HOST,
-        port=settings.Database.DB_PORT,
-        user=settings.Database.DB_USER,
-        password=settings.Database.DB_PASS,
-        database=settings.Database.DB_NAME,
+        host=settings.Database.HOST,
+        port=settings.Database.PORT,
+        user=settings.Database.USER,
+        password=settings.Database.PASS,
+        database=settings.Database.NAME,
         min_size=5,
         max_size=20
     )
