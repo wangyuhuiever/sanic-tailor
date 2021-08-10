@@ -30,6 +30,7 @@ class Redis:
     PORT = '6379'
     PASS = ''
     DB = '8'
+    PREFIX = 'sanic:cache'
 
 
 class Celery:
