@@ -43,8 +43,9 @@ class CeleryJob(object):
                     "-A",
                     "workers",
                     "flower",
-                    "--port=%s" % (settings.Celery.custom_flower_port or '5555'),
-                    "--basic_auth=%s:%s" % (settings.Celery.custom_flower_user or 'admin', settings.Celery.custom_flower_pass or 'admin'),
+                    f"--port={settings.Celery.custom_flower_port or '5555'}",
+                    f"--basic_auth={settings.Celery.custom_flower_user or 'admin'}:{settings.Celery.custom_flower_pass or 'admin'}",
+                    f"--broker_api=http://{settings.RabbitMQ.MQ_USER}:{settings.RabbitMQ.MQ_PASS}@{settings.RabbitMQ.MQ_HOST}:{settings.RabbitMQ.MQ_API_PORT}/api/",
                 ],
                 cwd=path, stdin=PIPE
             )

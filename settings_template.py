@@ -16,7 +16,8 @@ class Database:
 
 class RabbitMQ:
     HOST = ''
-    PORT = ''
+    PORT = '5672'
+    API_PORT = '15672'
     USER = ''
     PASS = ''
     VHOST = ''
@@ -26,9 +27,9 @@ class Redis:
     start = True
 
     HOST = ''
-    PORT = ''
+    PORT = '6379'
     PASS = ''
-    DB = ''
+    DB = '8'
 
 
 class Celery:
