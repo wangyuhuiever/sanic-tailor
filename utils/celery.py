@@ -70,7 +70,6 @@ class CeleryJob(object):
         thr.start()
 
     def stop(self):
-        Popen(['pkill', '-f', 'celery'])
         self.restart = False
 
 
