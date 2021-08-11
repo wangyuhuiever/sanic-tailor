@@ -1,0 +1,14 @@
+version: '3.3'
+
+services:
+  sanic:
+    image: sanic-template:latest
+    volumes:
+    - ./settings.py:/opt/sanic/settings.py
+    ports:
+    - 5000:5000
+    networks:
+      - net
+
+networks:
+  net:
