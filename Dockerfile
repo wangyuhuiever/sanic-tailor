@@ -20,7 +20,7 @@ RUN adduser \
     --no-create-home \
     "$USER"
 
-EXPOSE 5000
+EXPOSE 5000 5555
 
 WORKDIR $PROJECTS_DIR
 USER $USER
