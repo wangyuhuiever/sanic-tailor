@@ -280,4 +280,4 @@ cython_debug/
 
 .idea
 
-./settings.py
+settings.py
