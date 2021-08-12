@@ -56,6 +56,7 @@ class CeleryJob(object):
     def check_status(self):
         path = os.path.abspath(os.path.dirname(__name__))
         c = self.start_celery(path)
+        time.sleep(2)
         f = self.start_flower(path)
         while 1:
             if c.poll() is not None:
