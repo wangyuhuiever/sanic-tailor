@@ -50,17 +50,11 @@ class Celery:
 
     broker_url = f'amqp://{RabbitMQ.USER}:{RabbitMQ.PASS}@{RabbitMQ.HOST}:{RabbitMQ.PORT}/{RabbitMQ.VHOST}'
     result_backend = f'redis://default:{Redis.PASS}@{Redis.HOST}:{Redis.PORT}/{Redis.DB}'
+    task_default_queue = "5f77d2fe-c30b-4b30-b370-79141ceecad8"  # 重要，同一个broker用来隔离数据，建议使用uuid
     redis_max_connections = 100
     result_expires = 3600
     beat_schedule_filename = '/tmp/celerybeat-schedule'
     timezone = 'Asia/Shanghai'
     # enable_utc = True
-    # beat_schedule = {
-    #     'schedule_task': {
-    #         'task': 'schedule_task',
-    #         'schedule': 60,  # 默认一分钟
-    #         'args': (1, 2),
-    #         'kwargs': {'a': 'a'}
-    #     }
-    # }
+
 
