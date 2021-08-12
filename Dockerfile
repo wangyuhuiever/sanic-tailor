@@ -5,7 +5,7 @@ ENV PROJECTS_DIR=/opt/sanic
 ENV USER=sanic
 
 RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
-RUN apk update && apk add gcc make g++
+RUN apk update && apk add gcc make g++ tzdata && cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && apk del tzdata
 
 COPY . $PROJECTS_DIR
 
