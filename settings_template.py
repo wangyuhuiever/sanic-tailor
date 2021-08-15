@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 class Sanic:
-    name = "Yuhui Sanic"
+    name = "Sanic Tailor"
 
 
 class Database:
@@ -34,7 +34,7 @@ class Redis:
 
 
 class Celery:
-    name = "Yuhui Sanic Celery"
+    name = "Sanic Tailor Celery"
     start = True
 
     custom_db_host = Database.HOST
