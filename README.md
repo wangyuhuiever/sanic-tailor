@@ -14,3 +14,5 @@ I don't have any improvement with these components, just integrator them togethe
 1. orm (tortoise-orm)
 2. rabbitmq
 3. rpc
+4. celery with rpc
+5. zipkin

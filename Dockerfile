@@ -4,15 +4,18 @@ MAINTAINER wangyuhuiyi@gmail.com
 ENV PROJECTS_DIR=/opt/sanic
 ENV USER=sanic
 
-RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
-RUN apk update && apk add gcc make g++ tzdata && cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && apk del tzdata
-
 COPY . $PROJECTS_DIR
 
 COPY ./entrypoint.sh /
 
-# 安装项目依赖包
-RUN pip3 install -r $PROJECTS_DIR/requirements.txt -i https://pypi.douban.com/simple
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
+
+RUN apk update && \
+ apk add --no-cache postgresql-libs && \
+ apk add --no-cache --virtual .build-deps gcc musl-dev postgresql-dev make g++ tzdata && \
+ cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && \
+ pip3 install -r $PROJECTS_DIR/requirements.txt -i https://pypi.douban.com/simple && \
+ apk --purge del .build-deps
 
 RUN adduser \
     --disabled-password \
