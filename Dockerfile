@@ -1,5 +1,4 @@
-FROM python:3.8-alpine
-#FROM python:3.8.5-alpine3.12
+FROM python:3.8.5-alpine3.12
 MAINTAINER wangyuhuiyi@gmail.com
 
 ENV PROJECTS_DIR=/opt/sanic
