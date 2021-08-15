@@ -1,4 +1,4 @@
-from utils.db import Database
+from utils.pure_sql.asyncpg import Database
 from utils.redis import Redis
 import httpx
 import json

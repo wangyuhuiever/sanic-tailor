@@ -1,47 +1,66 @@
 # -*- coding: utf-8 -*-
 
+class Settings:
+    """
+    通过dict获取到字典
+    """
+    def __iter__(self):
+        for k in dir(self):
+            if k and not k.startswith('_'):
+                v = getattr(self, k)
+                yield (k, v)
+            else:
+                continue
+
+
 class Sanic:
     name = "Sanic Tailor"
 
 
-class Database:
-    start = True
+class PrueSQL:
+    _start = True
 
-    HOST = 'localhost'
-    PORT = '5432'
-    USER = ''
-    PASS = ''
-    NAME = ''
+    class AsyncPG(Settings):
+        _start = True
+
+        # asyncpg 中的连接参数
+        host = '192.168.1.63'
+        port = '5432'
+        user = 'yuhui'
+        password = 'yuhui.123'
+        database = 'yudb'
+        min_size = 5
+        max_size = 20
 
 
 class RabbitMQ:
-    HOST = ''
+    HOST = '192.168.1.63'
     PORT = '5672'
     API_PORT = '15672'
-    USER = ''
-    PASS = ''
-    VHOST = ''
+    USER = 'yuhui'
+    PASS = '6MsziVeSetJW0ies'
+    VHOST = 'yuhui'
 
 
 class Redis:
-    start = True
+    _start = True
 
-    HOST = ''
+    HOST = '192.168.1.63'
     PORT = '6379'
-    PASS = ''
+    PASS = 'OrWc8SJ71j8O4nfu'
     DB = '8'
     PREFIX = 'sanic:cache'
 
 
 class Celery:
     name = "Sanic Tailor Celery"
-    start = True
+    _start = True
 
-    custom_db_host = Database.HOST
-    custom_db_port = Database.PORT
-    custom_db_user = Database.USER
-    custom_db_pass = Database.PASS
-    custom_db_name = Database.NAME
+    custom_db_host = PrueSQL.AsyncPG.host
+    custom_db_port = PrueSQL.AsyncPG.port
+    custom_db_user = PrueSQL.AsyncPG.user
+    custom_db_pass = PrueSQL.AsyncPG.password
+    custom_db_name = PrueSQL.AsyncPG.database
 
     custom_flower_port = ''
     custom_flower_user = ''
@@ -56,5 +75,4 @@ class Celery:
     beat_schedule_filename = '/tmp/celerybeat-schedule'
     timezone = 'Asia/Shanghai'
     # enable_utc = True
-
 
