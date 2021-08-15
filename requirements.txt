@@ -7,3 +7,4 @@ flower==1.0.0
 httpx==0.18.2
 aioredis==2.0.0
 psycopg2==2.9.1
+tortoise-orm[asyncpg]==0.17.6

@@ -3,12 +3,16 @@ import settings
 from . import pure_sql
 from . import celery
 from . import redis
+from . import orm
 
 
 def init_utils(app):
 
     if settings.PrueSQL._start:
         pure_sql.init_pure_sql(app)
+
+    if settings.ORM._start:
+        orm.init_orm(app)
 
     if settings.Celery._start:
         @app.listener('main_process_start')

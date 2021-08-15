@@ -26,20 +26,51 @@ class PrueSQL:
         # asyncpg 中的连接参数
         host = '192.168.1.63'
         port = '5432'
-        user = 'yuhui'
-        password = 'yuhui.123'
-        database = 'yudb'
+        user = ''
+        password = ''
+        database = ''
         min_size = 5
         max_size = 20
+
+
+class ORM:
+    _start = True
+
+    class TortoiseORM(Settings):
+        _start = True
+
+        connections = {
+                # Dict format for connection
+                'default': {
+                    'engine': 'tortoise.backends.asyncpg',
+                    'credentials': {
+                        'host': '',
+                        'port': 5432,
+                        'user': '',
+                        'password': '',
+                        'database': ''
+                    }
+                },
+            }
+
+        apps = {
+                'models': {
+                    'models': [],  # todo: add models
+                    # If no default_connection specified, defaults to 'default'
+                    'default_connection': 'default',
+                }
+            }
+
+        use_tz = True
 
 
 class RabbitMQ:
     HOST = '192.168.1.63'
     PORT = '5672'
     API_PORT = '15672'
-    USER = 'yuhui'
-    PASS = '6MsziVeSetJW0ies'
-    VHOST = 'yuhui'
+    USER = ''
+    PASS = ''
+    VHOST = ''
 
 
 class Redis:
@@ -47,7 +78,7 @@ class Redis:
 
     HOST = '192.168.1.63'
     PORT = '6379'
-    PASS = 'OrWc8SJ71j8O4nfu'
+    PASS = ''
     DB = '8'
     PREFIX = 'sanic:cache'
 
