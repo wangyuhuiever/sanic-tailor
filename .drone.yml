@@ -1,0 +1,38 @@
+kind: pipeline
+type: docker
+name: default
+
+steps:
+- name: tags
+  image: plugins/docker
+  commands:
+    - echo -n "latest,`date +%Y.%m.%d`" > .tags
+
+- name: build
+  image: plugins/docker
+  settings:
+    registry: registry.cn-hangzhou.aliyuncs.com
+    repo: registry.cn-hangzhou.aliyuncs.com/wangyuhui/sanic-tailor
+    username:
+      from_secret: aliyun-username
+    password:
+      from_secret: aliyun-password
+  when:
+    branch:
+    - master
+
+- name: deploy
+  image: appleboy/drone-ssh
+  settings:
+    host: 192.168.1.63
+    username:
+      from_secret: ubuntu_username
+    password:
+      from_secret: ubuntu_password
+    port: 22
+    script:
+      - cd /opt/sanic-tailor && docker-compose pull && docker-compose up -d
+
+trigger:
+  event:
+    - push

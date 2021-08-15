@@ -2,7 +2,7 @@ version: '3.3'
 
 services:
   sanic:
-    image: sanic-template:latest
+    image: sanic-tailor:latest
     volumes:
     - ./settings.py:/opt/sanic/settings.py
     ports:
