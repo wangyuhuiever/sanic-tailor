@@ -1,5 +1,6 @@
 #! -*- coding: utf-8 -*-
 import asyncpg
+import asyncio
 from settings import PrueSQL
 from sanic.log import logger as _logger
 
@@ -12,12 +13,13 @@ class Database(object):
 
     @classmethod
     async def close(cls):
+        await asyncio.wait_for(cls.pool.close(), 10)
         cls.pool = {}
 
     async def execute(self, sql, *args):
         async with self.pool.acquire() as connection:
             value = await connection.fetch(sql, *args)
-            return value
+        return value
 
 
 async def init_database(app, loop):
