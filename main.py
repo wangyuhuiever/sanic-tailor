@@ -1,11 +1,11 @@
 from sanic import Sanic
-from blueprints import bp
+from addons import api
 import settings
 from utils import init_utils
 
 app = Sanic(settings.Sanic.name)
 app.update_config(settings.Sanic)
-app.blueprint(bp)
+app.blueprint(api)
 
 init_utils(app)
 

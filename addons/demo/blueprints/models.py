@@ -2,9 +2,9 @@ from sanic import Blueprint
 from sanic.log import logger
 from misc.response import response
 from decorators.error import catch_user_exception
-from blueprints.demo.models.models import DemoModel
+from addons.demo.models.models import DemoModel
 
-api = Blueprint("Api")
+api = Blueprint("Demo Api")
 
 
 @api.route("/test", methods=['POST'])
