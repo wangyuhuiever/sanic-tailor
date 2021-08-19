@@ -107,3 +107,5 @@ class Celery:
     timezone = 'Asia/Shanghai'
     # enable_utc = True
 
+
+TORTOISE_ORM = dict(ORM.TortoiseORM())
