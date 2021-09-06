@@ -3,6 +3,7 @@ import asyncpg
 import asyncio
 from settings import PrueSQL
 from sanic.log import logger as _logger
+import socket
 
 
 class Database(object):
@@ -36,3 +37,11 @@ async def close_database(app, loop):
     _logger.info("Database stopping...")
     await Database.close()
 
+
+# sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+# sock.bind(("localhost", 5000))
+# sock.listen(1)
+# while True:
+#     conn, addr = sock.accept()
+#     print(conn.recv(1024))
+#     conn.sendall()

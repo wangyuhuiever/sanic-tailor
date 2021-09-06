@@ -1,5 +1,4 @@
-from tortoise.models import Model
-from tortoise import fields
+from tortoise import Model, fields
 
 
 class DemoORMModel(Model):
