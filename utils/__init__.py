@@ -4,12 +4,16 @@ from . import pure_sql
 from . import celery
 from . import redis
 from . import orm
+from . import auth
 
 
 def init_utils(app):
 
     if settings.PrueSQL._start:
         pure_sql.init_pure_sql(app)
+
+    if settings.Auth._start:
+        auth.init_auth(app)
 
     if settings.ORM._start:
         orm.init_orm(app)

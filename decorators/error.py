@@ -1,6 +1,6 @@
 from functools import wraps
 from sanic.log import logger
-from misc.response import response
+from utils.response import response
 
 
 def catch_user_exception(func):

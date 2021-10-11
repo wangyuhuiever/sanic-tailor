@@ -17,6 +17,10 @@ class Sanic:
     name = "Sanic Tailor"
 
 
+class Auth:
+    _start = True
+
+
 class PrueSQL:
     _start = True
 

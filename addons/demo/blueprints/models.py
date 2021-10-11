@@ -1,6 +1,6 @@
 from sanic import Blueprint
 from sanic.log import logger
-from misc.response import response
+from utils.response import response
 from decorators.error import catch_user_exception
 from addons.demo.models.models import DemoModel
 
