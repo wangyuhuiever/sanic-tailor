@@ -89,18 +89,16 @@ class AuthUsers(object):
     async def authenticate(self):
 
         sql = """
-        select id, password from app_users where username=$1; 
+        select id, password from res_users where login=$1; 
         """
         try:
 
             result = await Database().execute(sql, self.username)
 
             if result:
-                password = result[0].get('password')
-                # todo: 使用hash存储用户密码
-                # hashed = values[0]['password']
-                # valid, replacement = self._crypt_context().verify_and_update(self.password, hashed)
-                if password == self.password:
+                hashed = result[0]['password']
+                valid, replacement = self._crypt_context().verify_and_update(self.password, hashed)
+                if valid:
                     return {'valid': True, 'user_id': result[0].get('id'), 'username': self.username}
             return {'valid': False, 'user_id': None, 'key': self.username}
         except Exception as e:
@@ -108,6 +106,16 @@ class AuthUsers(object):
                 'authenticate error': e
             })
             return {'valid': False, 'user_id': None, 'username': self.username}
+
+    def _crypt_context(self):
+        """ Passlib CryptContext instance used to encrypt and verify
+        passwords. Can be overridden if technical, legal or political matters
+        require different kdfs than the provided default.
+
+        Requires a CryptContext as deprecation and upgrade notices are used
+        internally
+        """
+        return default_crypt_context
 
 
 # class SubClaim(Claim):
