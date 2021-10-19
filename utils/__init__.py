@@ -9,16 +9,16 @@ from . import rpc
 
 def init_utils(app):
 
-    if settings.PrueSQL._start:
+    if 'PrueSQL' in dir(settings) and settings.PrueSQL._start:
         pure_sql.init_pure_sql(app)
 
-    if settings.RPC._start:
+    if 'RPC' in dir(settings) and settings.RPC._start:
         rpc.init_rpc(app)
 
-    if settings.Auth._start:
+    if 'Auth' in dir(settings) and settings.Auth._start:
         auth.init_auth(app)
 
-    if settings.Celery._start:
+    if 'Celery' in dir(settings) and settings.Celery._start:
         @app.listener('main_process_start')
         async def init_celery(app, loop):
             await celery.init_celery(app, loop)
@@ -27,7 +27,7 @@ def init_utils(app):
         async def close_celery(app, loop):
             await celery.close_celery(app, loop)
 
-    if settings.Redis._start:
+    if 'Redis' in dir(settings) and settings.Redis._start:
         @app.listener('after_server_start')
         async def init_redis(app, loop):
             await redis.init_redis(app, loop)

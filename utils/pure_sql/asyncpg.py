@@ -124,7 +124,7 @@ def _set_up_models(base_model):
 
 async def init_database(app, loop):
     _logger.info("Database starting...")
-    config = dict(PrueSQL.AsyncPG())
+    config = PrueSQL.AsyncPG.get_values()
     _logger.debug({'database setting': config})
     pool = await asyncpg.create_pool(
         **config

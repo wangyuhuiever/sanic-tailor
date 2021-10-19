@@ -2,23 +2,30 @@
 
 class Settings:
     """
-    通过dict获取到字典
+    获取字典
     """
-    def __iter__(self):
-        for k in dir(self):
-            if k and not k.startswith('_'):
-                v = getattr(self, k)
-                yield (k, v)
-            else:
-                continue
+
+    @classmethod
+    def get_values(cls):
+        d = dict(vars(cls))
+        private = [i for i in d.keys() if i.startswith('_')]
+        for k in private:
+            d.pop(k)
+        return d
 
 
 class Sanic:
     name = "Sanic Tailor"
 
 
+class RPC:
+    _start = True
+
+
 class Auth:
     _start = True
+    secret = ''
+    expiration_delta = 60 * 60 * 24
 
 
 class PrueSQL:
@@ -112,4 +119,4 @@ class Celery:
     # enable_utc = True
 
 
-TORTOISE_ORM = dict(ORM.TortoiseORM())
+TORTOISE_ORM = ORM.TortoiseORM.get_values()

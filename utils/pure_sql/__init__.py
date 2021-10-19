@@ -5,7 +5,7 @@ from . import asyncpg as psql
 
 def init_pure_sql(app):
 
-    if PrueSQL.AsyncPG._start:
+    if 'AsyncPG' in dir(PrueSQL) and PrueSQL.AsyncPG._start:
         @app.listener('before_server_start')
         async def init_database(app, loop):
             await psql.init_database(app, loop)

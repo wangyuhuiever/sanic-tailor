@@ -1,4 +1,5 @@
 #! -*- coding: utf-8 -*-
+from settings import Auth
 from sanic_jwt import Initialize
 from sanic.log import logger as _logger
 from .models import authenticate, store_refresh_token, retrieve_refresh_token, retrieve_user
@@ -12,10 +13,10 @@ def init_auth(app):
         path_to_authenticate='/auth',
         path_to_refresh='/refresh',
         path_to_verify='/verify',
-        secret='hard to guess',
+        secret=Auth.secret,
         authenticate=authenticate,
         refresh_token_enabled=True,
-        expiration_delta=60 * 60 * 24,
+        expiration_delta=Auth.expiration_delta,
         store_refresh_token=store_refresh_token,
         retrieve_refresh_token=retrieve_refresh_token,
         retrieve_user=retrieve_user,
