@@ -1,9 +1,11 @@
 #! -*- coding: utf-8 -*-
 from sanic_jwt import Initialize
+from sanic.log import logger as _logger
 from .models import authenticate, store_refresh_token, retrieve_refresh_token, retrieve_user
 
 
 def init_auth(app):
+    _logger.info("Auth Initialize...")
     Initialize(
         app,
         url_prefix='/api',

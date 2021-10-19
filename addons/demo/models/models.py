@@ -6,6 +6,7 @@ from sanic.log import logger as _logger
 
 
 class DemoModel(Database, Redis):
+    _name = "demo.model"
 
     async def cache_data(self, id, data):
         value = json.dumps(data)
