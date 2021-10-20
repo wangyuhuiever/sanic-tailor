@@ -75,14 +75,14 @@ class RPCClient(object):
         return res
 
 
-client = RPCClient(
-    "http://localhost:5000",
-    "/api/auth",
-    "admin",
-    "admin",
-    "/jsonrpc"
-)
-
 if __name__ == '__main__':
+    client = RPCClient(
+        "http://localhost:5000",
+        "/api/auth",
+        "admin",
+        "admin",
+        "/jsonrpc"
+    )
+
     client.model("demo.model", 'insert_data')
     client.request("test_api")
