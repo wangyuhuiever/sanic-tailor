@@ -9,11 +9,11 @@ def catch_user_exception(func):
         try:
             res = await func(*args, **kwargs)
         except Exception as e:
-            results = {'error': str(e)}
+            results = {'error': str(e), 'success': 0}
             logger.error({
                 '程序异常': e
             })
-            return response(results, status=403)
+            return response(results, status=500)
         return res
 
     return wrapper

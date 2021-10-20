@@ -53,6 +53,10 @@ class RPCClient(object):
         response = requests.post(self.host + self.rpc_uri, headers=default_headers, json=payload)
         return response
 
+    def ping(self):
+        response = requests.get(self.host + self.rpc_uri + '/ping')
+        return response.json()
+
     def model(self, model, method, *args, **kwargs):
         data = {
             "type": "model",
@@ -86,3 +90,5 @@ if __name__ == '__main__':
 
     client.model("demo.model", 'insert_data')
     client.request("test_api")
+    res = client.ping()
+    print(res)

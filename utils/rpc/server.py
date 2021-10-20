@@ -4,6 +4,7 @@ from functools import wraps
 from utils.pure_sql.asyncpg import Models
 from sanic.log import logger as _logger
 from sanic.exceptions import SanicException
+from decorators.error import catch_user_exception
 
 FUNCTION_MAPPINGS = {}
 
@@ -26,14 +27,17 @@ class RPC(object):
     def __init__(self, app, path=None, *args, **kwargs):
         self.app = app
         self.path = path or '/jsonrpc'
+        self.ping = self.path + '/ping'
 
         self._add_route()
 
     def _add_route(self):
         self.app.add_route(process_start, self.path, methods=['POST'])
+        self.app.add_route(rpc_ping, self.ping, methods=['GET'])
 
 
 @protected()
+@catch_user_exception
 async def process_start(request):
     result = {'success': 0, 'error': None, 'result': None}
     body = request.json
@@ -69,3 +73,7 @@ async def process_start(request):
     result.update({'success': 1, 'result': res})
     return response(result)
 
+
+@catch_user_exception
+async def rpc_ping(request):
+    return response({'ping': 'pong'})
