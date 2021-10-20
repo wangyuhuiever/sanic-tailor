@@ -51,7 +51,7 @@ class RPCClient(object):
         default_headers = self.prepare_headers()
         default_headers.update(headers)
         response = requests.post(self.host + self.rpc_uri, headers=default_headers, json=payload)
-        return response
+        return response.json()
 
     def ping(self):
         response = requests.get(self.host + self.rpc_uri + '/ping')
