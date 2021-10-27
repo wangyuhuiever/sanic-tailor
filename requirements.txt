@@ -13,3 +13,4 @@ aerich==0.5.7
 sanic-jwt==1.7.0
 passlib==1.7.4
 sanic-cors==1.0.1
+alibabacloud_dysmsapi20170525==2.0.6

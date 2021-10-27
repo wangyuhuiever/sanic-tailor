@@ -28,6 +28,13 @@ class Auth:
     expiration_delta = 60 * 60 * 24
 
 
+class SMS:
+    key = ''
+    secret = ''
+    sign_name = ''
+    template_code = ''
+
+
 class PrueSQL:
     _start = True
 
