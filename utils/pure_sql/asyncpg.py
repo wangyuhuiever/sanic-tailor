@@ -1,7 +1,11 @@
 #! -*- coding: utf-8 -*-
+import json
+import copy
 import asyncpg
 import asyncio
 import inspect
+import datetime
+from sanic import exceptions
 from settings import PrueSQL
 from sanic.log import logger as _logger
 
@@ -48,8 +52,17 @@ class Database(object):
     _abstract = None
     _table = None
 
-    id = None
-    ids = None
+    _fields = ['id', 'ids']
+
+    def __init__(self, **kwargs):
+        for k, v in kwargs.items():
+            if not k.startswith('_') and k in self._fields:
+                self.__setattr__(k, v)
+
+    # if not __getattribute__ raise a Error, then will __getattr__
+    def __getattr__(self, item):
+        if item in self._fields:
+            return None
 
     @classmethod
     async def init(cls, pool):
@@ -65,7 +78,21 @@ class Database(object):
             value = await connection.fetch(sql, *args)
         return value
 
+    async def update(self, data):
+        for k, v in data.items():
+            self.__setattr__(k, v)
+
+    async def copy(self):
+        nself = Models.get(self._name).model()
+        values = {}
+        for f in self._fields:
+            values.update({f: self.__getattr__(f)})
+        await nself.update(values)
+        return nself
+
     async def search(self, condition, fields='*'):
+        if isinstance(fields, list):
+            fields = ','.join(fields)
         where_list = []
         values = []
         for k, v in condition.items():
@@ -73,10 +100,34 @@ class Database(object):
             where_list.append(f'{k}=${len(values)}')
         where_str = ' and '.join(where_list)
         sql = f"select {fields} from {self._table} where {where_str};"
-        res = await self.execute(sql, values)
+        res = await self.execute(sql, *values)
+        record_list = []
         for r in res:
-            self.id = r.get('id')
-        return self
+            nself = await self.copy()
+            await nself.update(r)
+            record_list.append(nself)
+        return record_list
+
+    async def create_single(self, data):
+        if not data:
+            raise exceptions.abort(403, '创建出错，无数据！')
+        if not isinstance(data, dict):
+            raise Warning('Field values must be dictionary type.')
+
+        data.update({
+            'create_uid': 1,
+            'create_date': datetime.datetime.utcnow(),
+            'write_uid': 1,
+            'write_date': datetime.datetime.utcnow()
+        })
+
+        field_list = ','.join(data.keys())
+        value_list = tuple(data.values())
+        value_string_list = list(map(lambda k: '$' + str(k), range(1, len(value_list) + 1)))
+        value_string = ','.join(value_string_list)
+        insert_sql = f"INSERT INTO {self._table} ({field_list}) VALUES (" + value_string + ") RETURNING id;"
+        ids = await self.execute(insert_sql, *value_list)
+        return ids[0]['id']
 
 
 

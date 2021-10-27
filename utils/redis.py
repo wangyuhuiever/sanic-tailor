@@ -21,7 +21,11 @@ class Redis(object):
         res = await self.redis.set(name, value, ex, px, nx, xx, keepttl)
         return res
 
-    @alru_cache()
+    async def ttl(self, name):
+        name = self.prefix + name
+        res = await self.redis.ttl(name)
+        return res
+
     async def get(self, name):
         name = self.prefix + name
         value = await self.redis.get(name)
