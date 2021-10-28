@@ -141,6 +141,32 @@ class Database(object):
         ids = await self.execute(insert_sql, *value_list)
         return ids[0]['id']
 
+    async def update_single(self, condition, data):
+        if not isinstance(condition, dict):
+            raise Warning('Field condition must be dictionary type.')
+        if not isinstance(data, dict):
+            raise Warning('Field data must be dictionary type.')
+        data.update({
+            'write_uid': 1,
+            'write_date': datetime.datetime.utcnow()
+        })
+        update_str_list = []
+        where_str_list = []
+        values = []
+        for k, v in data.items():
+            values.append(v)
+            update_str_list.append(f'{k}=${len(values)}')
+
+        for k, v in condition.items():
+            values.append(v)
+            where_str_list.append(f'{k}=${len(values)}')
+
+        update_str = ','.join(update_str_list)
+        where_str = ','.join(where_str_list)
+
+        update_sql = f"UPDATE {self._table} SET {update_str} WHERE {where_str} RETURNING id;"
+        update_ids = await self.execute(update_sql, *values)
+        return update_ids[0]['id']
 
 
 def get_all_classes(base_model):
