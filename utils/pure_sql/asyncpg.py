@@ -59,10 +59,12 @@ class Database(object):
             if not k.startswith('_') and k in self._fields:
                 self.__setattr__(k, v)
 
-    # if not __getattribute__ raise a Error, then will __getattr__
-    def __getattr__(self, item):
-        if item in self._fields:
-            return None
+    def __new__(cls, *args, **kwargs):
+        instance = super(Database, cls).__new__(cls)
+        for k in instance._fields:
+            if k not in kwargs:
+                instance.__setattr__(k, None)
+        return instance
 
     @classmethod
     async def init(cls, pool):
