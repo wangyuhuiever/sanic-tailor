@@ -86,9 +86,19 @@ class Database(object):
         nself = Models.get(self._name).model()
         values = {}
         for f in self._fields:
-            values.update({f: self.__getattr__(f)})
+            values.update({f: self.__getattribute__(f)})
         await nself.update(values)
         return nself
+
+    async def read(self, fields=None):
+        if not fields:
+            fields = self._fields
+        else:
+            if any(f not in self._fields for f in fields):
+                raise exceptions.abort(200, "can not read all fields!")
+
+        res = {k: self.__getattribute__(k) for k in fields}
+        return res
 
     async def search(self, condition, fields='*'):
         if isinstance(fields, list):

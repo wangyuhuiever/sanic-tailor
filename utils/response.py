@@ -15,5 +15,8 @@ class DataToJSON(json.JSONEncoder):
         return json.JSONEncoder.default(self, o)
 
 
-def response(*args, **kwargs):
-    return sanic_json(dumps=json.dumps, ensure_ascii=False, cls=DataToJSON, *args, **kwargs)
+def response(res, *args, **kwargs):
+    default = {'success': 0, 'code': '200', 'message': None, 'data': None}
+    default.update(res)
+    new_args = [default, *args]
+    return sanic_json(dumps=json.dumps, ensure_ascii=False, cls=DataToJSON, *new_args, **kwargs)

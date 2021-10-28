@@ -211,7 +211,7 @@ class AppUsers(Database, Redis):
 
 class Register(BaseEndpoint):
     async def post(self, request, *args, **kwargs):
-        result = {'success': 0, 'message': None, 'result': []}
+        result = {'success': 0, 'message': None, 'data': []}
         reg_type = request.args.get('type')
         body = request.json.get('body')
         user_obj = AppUsers()
@@ -255,6 +255,19 @@ class SMSCode(BaseEndpoint):
         body = request.json.get('body')
         phone = body.get('phone')
         result = await AppUsers(phone=phone).send_code()
+        return response(result)
+
+
+class UserInfo(BaseEndpoint):
+    async def get(self, request, *args, **kwargs):
+        result = {}
+        payload = await request.app.ctx.auth.extract_payload(request)
+        if not payload:
+            raise AuthenticationFailed("No user_id extracted from the token.")
+        user_id = payload.get('user_id')
+        record = await AppUsers(id=user_id).get_info()
+        res = await record.read(['name', 'email', 'phone', 'confirmed'])
+        result.update({'data': res, 'success': 1})
         return response(result)
 
 # class SubClaim(Claim):

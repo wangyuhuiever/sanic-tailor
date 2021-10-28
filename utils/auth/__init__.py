@@ -22,6 +22,7 @@ def init_auth(app):
         retrieve_user=retrieve_user,
         class_views=[
             ('/register', Register),
-            ('/send_code', SMSCode)
+            ('/send_code', SMSCode),
+            ('/user/info', SMSCode),
         ]
     )

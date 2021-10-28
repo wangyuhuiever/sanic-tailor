@@ -39,7 +39,7 @@ class RPC(object):
 @protected()
 @catch_user_exception
 async def process_start(request):
-    result = {'success': 0, 'error': None, 'result': None}
+    result = {'success': 0, 'error': None, 'data': None}
     body = request.json
     if not body:
         result.update({'error': "Missing Params!"})
@@ -70,7 +70,7 @@ async def process_start(request):
         _logger.info({"error": e})
         result.update({'error': 'Internal Error!'})
         return response(result)
-    result.update({'success': 1, 'result': res})
+    result.update({'success': 1, 'data': res})
     return response(result)
 
 
