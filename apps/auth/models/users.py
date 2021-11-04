@@ -12,6 +12,8 @@ from sanic_jwt.exceptions import AuthenticationFailed
 from sanic.log import logger as _logger
 from utils.response import response
 from .alisms import Sample
+from utils.orm._sqlalchemy import BaseModel
+from sqlalchemy import Column, String, Boolean, Integer, select
 
 default_crypt_context = CryptContext(
     # kdf which can be verified by the context. The default encryption kdf is
@@ -34,7 +36,7 @@ async def authenticate(request, *args, **kwargs):
     # 2. 尝试从 post body 中获取用户名密码
     # 3. 尝试从 url params 中获取用户名密码
     # 如果还是获取不到就提示信息缺少
-    auth_type = request.args.get('type') or 'key'
+    auth_type = request.args.get('type')
     basic_string = request.headers.get('Authorization')
     if basic_string:
         base64_string = basic_string.split(' ')[1]
@@ -47,16 +49,21 @@ async def authenticate(request, *args, **kwargs):
     if not (username and password):
         raise AuthenticationFailed("Missing params.")
 
-    values = {}
-    if auth_type == 'email':
-        values.update({'email': username, 'password': password})
-    elif auth_type == 'phone':
-        values.update({'phone': username, 'code': password})
-    elif auth_type == 'key':
-        values.update({'key': username, 'secret': password})
-    else:
-        raise AuthenticationFailed("Auth error.")
-    auth = await AppUsers(**values).authenticate(auth_type)
+    async with User.session() as session:
+        async with session.begin():
+            if auth_type == 'email':
+                rec = await session.execute(select(User).filter_by(email=username))
+                user = rec.scalar_one_or_none()
+            elif auth_type == 'phone':
+                rec = await session.execute(select(User).filter_by(phone=username))
+                user = rec.scalar_one_or_none()
+            else:
+                raise AuthenticationFailed("Auth error.")
+
+    if not user:
+        raise AuthenticationFailed("Wrong username/password!")
+
+    auth = await user.authenticate(auth_type, password)
 
     if not auth.get('valid'):
         raise AuthenticationFailed("Auth error.")
@@ -92,31 +99,14 @@ async def retrieve_user(request, *args, **kwargs):
     return payload
 
 
-class AppUsers(Database, Redis):
-    _name = "app.users"
+class User(BaseModel, Redis):
+    __tablename__ = 'users'
+    __table_args__ = {"extend_existing": True}
 
-    _fields = ['id', 'name', 'phone', 'email', 'password', 'key', 'secret', 'code']
-
-    async def create(self, data):
-        if data.get('password'):
-            data.update({'password': self.hash_password(data.get('password'))})
-        user_id = await self.create_single(data)
-        return user_id
-
-    async def get_info(self, active=True):
-        fields = ['id', 'name', 'phone', 'email', 'password', 'key', 'secret']
-        condition = {'active': active}
-        if self.phone:
-            condition.update({'phone': self.phone})
-        elif self.email:
-            condition.update({'email': self.email})
-        elif self.key:
-            condition.update({'key': self.key})
-        else:
-            return None
-        records = await self.search(condition, fields)
-        if records:
-            return records[0]
+    phone = Column(String(), unique=True)
+    email = Column(String(), unique=True)
+    password = Column(String())
+    active = Column(Boolean(), default=True)
 
     async def send_code(self):
         result = {'success': 0, 'message': None}
@@ -168,35 +158,17 @@ class AppUsers(Database, Redis):
     #     await self.execute(sql, password_hashed, self.email, self.phone)
     #     return password_hashed
 
-    async def authenticate(self, auth_type):
+    async def authenticate(self, auth_type, password):
 
-        # sql = """
-        # select id, password from res_users where login=$1;
-        # """
-        try:
-
-            # result = await Database().execute(sql, self.username)
-            record = await self.get_info()
-            username = self.name
-            valid = False
-            if record:
-                if auth_type == 'phone':
-                    valid = await self.verify_code(self.code)
-                elif auth_type == 'email':
-                    hashed = record.secret
-                    valid, replacement = self._crypt_context().verify_and_update(self.secret, hashed)
-                elif auth_type == 'key':
-                    valid = False
-                    if record.secret == self.secret:
-                        valid = True
-                if valid:
-                    return {'valid': True, 'user_id': record.id, 'username': username}
-            return {'valid': False, 'user_id': None, 'username': username}
-        except Exception as e:
-            _logger.error({
-                'authenticate error': e
-            })
-            return {'valid': False, 'user_id': None, 'username': None}
+        valid = False
+        if auth_type == 'phone':
+            valid = await self.verify_code(password)
+        elif auth_type == 'email':
+            hashed = self.password
+            valid, replacement = self._crypt_context().verify_and_update(password, hashed)
+        if valid:
+            return {'valid': True, 'user_id': self.id, 'username': self.name}
+        return {'valid': False, 'user_id': None, 'username': None}
 
     def _crypt_context(self):
         """ Passlib CryptContext instance used to encrypt and verify
@@ -214,37 +186,42 @@ class Register(BaseEndpoint):
         result = {'success': 0, 'message': None, 'data': []}
         reg_type = request.args.get('type')
         body = request.json.get('body')
-        user_obj = AppUsers()
-        if reg_type == 'phone':
-            phone = str(body.get('username'))
-            await user_obj.update({'phone': phone})
-            record = await user_obj.get_info()
-            if record:
-                result.update({'message': 'This phone has been register!'})
-                return response(result)
-            else:
-                code = str(body.get('password'))
-                values = {'name': phone, 'phone': phone, 'active': True}
-                valid = await user_obj.verify_code(code)
-                if valid:
-                    user_id = await user_obj.create(values)
+        async with User.session() as session:
+            async with session.begin():
+                if reg_type == 'phone':
+                    phone = str(body.get('username'))
+
+                    rec = await session.execute(select(User).filter_by(phone=phone))
+                    user = rec.fetchone()
+                    if user:
+                        result.update({'message': 'This phone has been register!'})
+                        return response(result)
+                    else:
+                        code = str(body.get('password'))
+                        values = {'name': phone, 'phone': phone, 'active': True}
+                        valid = await User(phone=phone).verify_code(code)
+                        if valid:
+                            user = User(**values)
+                            session.add(user)
+                        else:
+                            result.update({'message': 'Verify code failed!'})
+                            return response(result)
+                elif reg_type == 'email':
+                    email = body.get('username')
+                    rec = await session.execute(select(User).filter_by(email=email))
+                    user = rec.fetchone()
+                    if user:
+                        result.update({'message': 'This email has been register!'})
+                        return response(result)
+                    else:
+                        password = body.get('password')
+                        hashed = await User().hash_password(password)
+                        values = {'name': email, 'email': email, 'password': hashed, 'active': True}
+                        user = User(**values)
+                        session.add(user)
                 else:
-                    result.update({'message': 'Verify code failed!'})
+                    result.update({'message': 'Error type!'})
                     return response(result)
-        elif reg_type == 'email':
-            email = body.get('username')
-            await user_obj.update({'email': email})
-            record = await user_obj.get_info()
-            if record:
-                result.update({'message': 'This email has been register!'})
-                return response(result)
-            else:
-                password = body.get('password')
-                values = {'name': email, 'email': email, 'password': password, 'active': True}
-                user_id = await user_obj.create(values)
-        else:
-            result.update({'message': 'Error type!'})
-            return response(result)
 
         result.update({'success': 1, 'message': 'Register success'})
         return response(result)
@@ -254,7 +231,7 @@ class SMSCode(BaseEndpoint):
     async def post(self, request, *args, **kwargs):
         body = request.json.get('body')
         phone = body.get('phone')
-        result = await AppUsers(phone=phone).send_code()
+        result = await User(phone=phone).send_code()
         return response(result)
 
 
@@ -265,53 +242,14 @@ class UserInfo(BaseEndpoint):
         if not payload:
             raise AuthenticationFailed("No user_id extracted from the token.")
         user_id = payload.get('user_id')
-        record = await AppUsers(id=user_id).get_info()
-        res = await record.read(['name', 'email', 'phone', 'confirmed'])
-        result.update({'data': res, 'success': 1})
+        async with User.session() as session:
+            async with session.begin():
+                user = await session.get(User, user_id)
+        data = {
+            'name': user.name,
+            'phone': user.phone,
+            'email': user.email
+        }
+        result.update({'data': data, 'success': 1})
         return response(result)
 
-# class SubClaim(Claim):
-#     key = 'sub'
-#
-#     def setup(self, payload, user):
-#         return user.get('key')
-#
-#     def verify(self, value):
-#         return True
-#
-#
-# class CustomResponse(Responses):
-#     @staticmethod
-#     def extend_authenticate(
-#         request, user=None, access_token=None, refresh_token=None
-#     ):
-#
-#         async def insert_user_token():
-#             payload = await request.app.ctx.auth._decode(access_token)
-#             sql = """
-#             insert into app_token (user_id, access_token, expiry_time, active, refresh_token, create_uid, create_date, write_uid, write_date)
-#             values ($1, $2, $3, $4, $5, $6, $7, $8, $9);
-#             """
-#             time_now = datetime.datetime.utcnow()
-#             values = [
-#                 user.get('uid'),
-#                 access_token,
-#                 datetime.datetime.fromtimestamp(payload.get('exp'), datetime.timezone.utc).replace(tzinfo=None),
-#                 True,
-#                 refresh_token,
-#                 1,
-#                 time_now,
-#                 1,
-#                 time_now
-#             ]
-#             await Database().execute(sql, *values)
-#
-#
-#         request.app.add_task(insert_user_token())
-#
-#         return {'expiresIn': request.app.config.TOKEN_EXPIRE_TIME}
-#
-#     @staticmethod
-#     def extend_retrieve_user(request, user=None, payload=None):
-#         expiry = int(payload.get('exp') - time.time())
-#         return {'expiresIn': expiry}

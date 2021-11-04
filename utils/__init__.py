@@ -3,8 +3,9 @@ import settings
 from . import pure_sql
 from . import celery
 from . import redis
-from . import auth
+from apps import auth
 from . import rpc
+from . import orm
 
 
 def init_utils(app):
@@ -17,6 +18,9 @@ def init_utils(app):
 
     if 'Auth' in dir(settings) and settings.Auth._start:
         auth.init_auth(app)
+
+    if 'ORM' in dir(settings) and settings.ORM._start:
+        orm.init_orm(app)
 
     if 'Celery' in dir(settings) and settings.Celery._start:
         @app.listener('main_process_start')

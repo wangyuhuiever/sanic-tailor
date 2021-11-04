@@ -6,4 +6,3 @@ api = Blueprint.group(
     demo_api,
     url_prefix='/api'
 )
-

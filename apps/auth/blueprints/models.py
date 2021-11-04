@@ -2,20 +2,19 @@ from sanic import Blueprint
 from sanic.log import logger
 from utils.response import response
 from decorators.error import catch_user_exception
-from addons.demo.models.models import DemoModel
-from utils.rpc.server import register_rpc
+from apps.auth.models.users import User
 
-api = Blueprint("Demo Api")
+auth = Blueprint("Auth")
 
 
-@api.route("/test", methods=['POST'])
+@auth.route("/test", methods=['GET'])
 @catch_user_exception
-@register_rpc('test_api')
 async def test_api(request):
     headers = request.headers
     logger.info({'headers': headers})
 
-    data = await DemoModel().insert_data()
+    t1 = await User.create(name='table')
+    print(t1)
 
-    return response({'data': data})
+    return response({'data': '1'})
 
