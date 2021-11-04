@@ -16,7 +16,7 @@ async def test_api(request):
     logger.info({'headers': headers})
 
     model = Models.get('demo.model')
-    await model.model().demo_method()
+    await model().demo_method()
 
     return response({'data': '1'})
 

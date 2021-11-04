@@ -90,11 +90,11 @@ class Models:
     @classmethod
     def get(cls, name):
         models = list(filter(lambda m: m.name == name, MODEL_RECORDS))
-        return models[0] if models else cls
+        return models[0].model if models else cls
 
     def get_function(self, name):
         functions = list(filter(lambda r: r.model == self.model and r.name == name, FUNCTION_RECORDS))
-        return functions[0] if functions else None
+        return functions[0].function if functions else None
 
 
 class Functions:
