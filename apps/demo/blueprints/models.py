@@ -2,7 +2,7 @@ from sanic import Blueprint
 from sanic.log import logger
 from utils.response import response
 from decorators.error import catch_user_exception
-from apps.demo.models.models import DemoModel
+from utils.orm._sqlalchemy import Models  # 无需import具体class，通过Models查询，可以使用_inherit继承特性
 from utils.rpc.server import register_rpc
 
 api = Blueprint("Demo Api")
@@ -15,7 +15,8 @@ async def test_api(request):
     headers = request.headers
     logger.info({'headers': headers})
 
-    data = await DemoModel().insert_data()
+    model = Models.get('demo.model')
+    await model.model().demo_method()
 
-    return response({'data': data})
+    return response({'data': '1'})
 

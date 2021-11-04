@@ -1,8 +1,11 @@
-from utils.pure_sql.asyncpg import Database
+from utils.orm._sqlalchemy import BaseModel
 
 
-class DemoModel(Database):
+class DemoModel(BaseModel):
+    __tablename__ = 'demo_model'
+    __table_args__ = {'extend_existing': True}
     _inherit = "demo.model"
 
     async def demo_method(self):
+        await super(DemoModel, self).demo_method()
         print('demo inherit')

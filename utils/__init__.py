@@ -1,17 +1,13 @@
 # -*- coding: utf-8 -*-
 import settings
-from . import pure_sql
 from . import celery
 from . import redis
-from apps import auth
+from . import auth
 from . import rpc
 from . import orm
 
 
 def init_utils(app):
-
-    if 'PrueSQL' in dir(settings) and settings.PrueSQL._start:
-        pure_sql.init_pure_sql(app)
 
     if 'RPC' in dir(settings) and settings.RPC._start:
         rpc.init_rpc(app)

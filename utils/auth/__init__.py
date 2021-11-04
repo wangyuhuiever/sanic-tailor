@@ -2,7 +2,7 @@
 from settings import Auth
 from sanic_jwt import Initialize
 from sanic.log import logger as _logger
-from .models import authenticate, store_refresh_token, retrieve_refresh_token, retrieve_user, Register, SMSCode
+from .users import authenticate, store_refresh_token, retrieve_refresh_token, retrieve_user, Register, SMSCode, UserInfo
 
 
 def init_auth(app):
@@ -23,6 +23,6 @@ def init_auth(app):
         class_views=[
             ('/register', Register),
             ('/send_code', SMSCode),
-            ('/user/info', SMSCode),
+            ('/user/info', UserInfo),
         ]
     )

@@ -1,7 +1,7 @@
 from utils.response import response
 from sanic_jwt import protected
 from functools import wraps
-from utils.pure_sql.asyncpg import Models
+from utils.orm._sqlalchemy import Models
 from sanic.log import logger as _logger
 from sanic.exceptions import SanicException
 from decorators.error import catch_user_exception
@@ -54,10 +54,10 @@ async def process_start(request):
             res = await FUNCTION_MAPPINGS[name](request, *args, **kwargs)
         elif type == 'model':
             model = body.get('model')
-            model_id = body.get('id')
+            # model_id = body.get('id')
             # model_ids = body.get('ids')
             model_obj = Models.get(model)
-            self = await model_obj.model().search({'id': model_id})
+            self = await model_obj.model()  # todo: 使用orm查询出record
             res = await model_obj.get_function(name).function(self, *args, **kwargs)
         else:
             result.update({'error': 'Wrong Type!'})

@@ -1,11 +1,7 @@
 #! -*- coding: utf-8 -*-
 import base64
-import datetime
-import time
-import uuid
 import random
 from passlib.context import CryptContext
-from utils.pure_sql.asyncpg import Database
 from utils.redis import Redis
 from sanic_jwt import Responses, Claim, BaseEndpoint
 from sanic_jwt.exceptions import AuthenticationFailed
