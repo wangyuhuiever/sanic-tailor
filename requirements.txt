@@ -6,10 +6,6 @@ redis==3.5.3
 flower==1.0.0
 httpx==0.18.2
 aioredis==2.0.0
-psycopg2==2.9.1
-# tortoise-orm[asyncpg]==0.17.6
-# git+https://github.com/tortoise/aerich.git@dev
-aerich==0.5.7
 sanic-jwt==1.7.0
 passlib==1.7.4
 sanic-cors==1.0.1

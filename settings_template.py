@@ -54,6 +54,15 @@ class PrueSQL:
 class ORM:
     _start = True
 
+    class SQLAlchemy:
+        _start = True
+
+        db_host = 'localhost'
+        db_port = '5432'
+        db_name = 'tailor'
+        db_user = ''
+        db_pass = ''
+
     class TortoiseORM(Settings):
         _start = True
 
