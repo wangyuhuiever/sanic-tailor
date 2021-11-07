@@ -74,7 +74,7 @@ class BaseModel(Base):
         return result
 
 
-class BaseUser(BaseModel):
+class User(BaseModel):
     __tablename__ = 'users'
 
     name = Column(String(), nullable=False)
