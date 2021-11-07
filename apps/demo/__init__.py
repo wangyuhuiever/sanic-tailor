@@ -1,5 +1,8 @@
-from sanic import Blueprint
-from .blueprints import api
-from . import models
+from sanic.log import logger as _logger
 
-demo_api = Blueprint.group(api, url_prefix='/demo')
+
+def init_app(app):
+    _logger.info("Demo Initialize...")
+
+    from .blueprints import demo_api
+    app.blueprint(demo_api, url_prefix='/api')

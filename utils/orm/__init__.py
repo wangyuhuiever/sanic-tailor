@@ -5,6 +5,6 @@ from settings import ORM
 def init_orm(app):
 
     if 'SQLAlchemy' in dir(ORM) and ORM.SQLAlchemy._start:
-        from . import _sqlalchemy
+        from . import db
 
-        _sqlalchemy.init_sqlalchemy(app, ORM.SQLAlchemy)
+        db.init_sqlalchemy(app, ORM.SQLAlchemy)

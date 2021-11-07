@@ -2,7 +2,6 @@
 import settings
 from . import celery
 from . import redis
-from . import auth
 from . import rpc
 from . import orm
 
@@ -11,9 +10,6 @@ def init_utils(app):
 
     if 'RPC' in dir(settings) and settings.RPC._start:
         rpc.init_rpc(app)
-
-    if 'Auth' in dir(settings) and settings.Auth._start:
-        auth.init_auth(app)
 
     if 'ORM' in dir(settings) and settings.ORM._start:
         orm.init_orm(app)

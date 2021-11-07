@@ -1,8 +1,9 @@
-from sanic import Blueprint
-from .demo import demo_api
+def init_apps(app):
+    from . import auth
+    auth.init_app(app)
 
+    from . import demo
+    demo.init_app(app)
 
-api = Blueprint.group(
-    demo_api,
-    url_prefix='/api'
-)
+    from . import message
+    message.init_app(app)

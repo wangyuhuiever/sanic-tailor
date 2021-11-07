@@ -3,4 +3,4 @@ from sanic import Blueprint
 
 from .models import api
 
-demo_api = Blueprint.group(api, url_prefix='/demo')
+message_api = Blueprint.group(api, url_prefix='/message')

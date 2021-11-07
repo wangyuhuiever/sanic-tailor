@@ -7,6 +7,11 @@ from sqlalchemy.orm import declarative_base, relationship
 import datetime
 import inspect
 from settings import ORM
+try:
+    from utils.redis import Redis
+    rdb = Redis().redis
+except:
+    rdb = None
 
 db = create_async_engine(
     "postgresql+asyncpg://{db_user}:{db_pass}@{db_host}:{db_port}/{db_name}".format(
@@ -59,6 +64,7 @@ class BaseModel(Base):
     write_date = Column(DateTime(), nullable=False, default=datetime.datetime.utcnow(), onupdate=datetime.datetime.utcnow())
 
     session = sessionmaker(db, AsyncSession, expire_on_commit=False)
+    redis = rdb
 
     async def execute(self, sql, values):
         with db.connect() as conn:
@@ -161,5 +167,4 @@ def _set_up_models(base_model):
 
 
 
-from utils.auth import users
-from apps.demo.models import *
+from apps import __model_install__

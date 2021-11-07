@@ -17,15 +17,12 @@ class Settings:
 class Sanic:
     name = "Sanic Tailor"
 
+    SANIC_JWT_SECRET = "hard to guess"
+    SANIC_JWT_EXPIRATION_DELTA = 60 * 60 * 24
+
 
 class RPC:
     _start = True
-
-
-class Auth:
-    _start = True
-    secret = ''
-    expiration_delta = 60 * 60 * 24
 
 
 class SMS:
@@ -33,22 +30,6 @@ class SMS:
     secret = ''
     sign_name = ''
     template_code = ''
-
-
-class PrueSQL:
-    _start = True
-
-    class AsyncPG(Settings):
-        _start = True
-
-        # asyncpg 中的连接参数
-        host = '192.168.1.63'
-        port = '5432'
-        user = ''
-        password = ''
-        database = ''
-        min_size = 5
-        max_size = 20
 
 
 class ORM:
@@ -62,33 +43,6 @@ class ORM:
         db_name = 'tailor'
         db_user = ''
         db_pass = ''
-
-    class TortoiseORM(Settings):
-        _start = True
-
-        connections = {
-                # Dict format for connection
-                'default': {
-                    'engine': 'tortoise.backends.asyncpg',
-                    'credentials': {
-                        'host': '',
-                        'port': 5432,
-                        'user': '',
-                        'password': '',
-                        'database': ''
-                    }
-                },
-            }
-
-        apps = {
-                'models': {
-                    'models': ['addons.tortoise_demo.__models__', 'aerich.models'],  # todo: add models
-                    # If no default_connection specified, defaults to 'default'
-                    'default_connection': 'default',
-                }
-            }
-
-        use_tz = True
 
 
 class RabbitMQ:
@@ -114,11 +68,11 @@ class Celery:
     name = "Sanic Tailor Celery"
     _start = True
 
-    custom_db_host = PrueSQL.AsyncPG.host
-    custom_db_port = PrueSQL.AsyncPG.port
-    custom_db_user = PrueSQL.AsyncPG.user
-    custom_db_pass = PrueSQL.AsyncPG.password
-    custom_db_name = PrueSQL.AsyncPG.database
+    custom_db_host = ORM.SQLAlchemy.db_host
+    custom_db_port = ORM.SQLAlchemy.db_port
+    custom_db_user = ORM.SQLAlchemy.db_user
+    custom_db_pass = ORM.SQLAlchemy.db_pass
+    custom_db_name = ORM.SQLAlchemy.db_name
 
     custom_flower_port = ''
     custom_flower_user = ''
@@ -133,6 +87,3 @@ class Celery:
     beat_schedule_filename = '/tmp/celerybeat-schedule'
     timezone = 'Asia/Shanghai'
     # enable_utc = True
-
-
-TORTOISE_ORM = ORM.TortoiseORM.get_values()

@@ -1,4 +1,4 @@
-from utils.orm._sqlalchemy import BaseModel
+from utils.orm.db import BaseModel
 
 
 class DemoModel(BaseModel):

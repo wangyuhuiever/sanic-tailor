@@ -1,7 +1,7 @@
 from utils.response import response
 from sanic_jwt import protected
 from functools import wraps
-from utils.orm._sqlalchemy import Models
+from utils.orm.db import Models
 from sanic.log import logger as _logger
 from sanic.exceptions import SanicException
 from decorators.error import catch_user_exception

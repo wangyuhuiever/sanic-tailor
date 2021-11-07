@@ -1,4 +1,4 @@
-from utils.orm._sqlalchemy import BaseModel
+from utils.orm.db import BaseModel
 import httpx
 import json
 from sanic.log import logger as _logger
